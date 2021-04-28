@@ -73,7 +73,7 @@ getIsBookRequestActive()
 
   updateBookRequestStatus=()=>{
     db.collection('RequestedBooks').doc(this.state.docId).update({
-      bookStatus :'recieved'
+      bookStatus :'received'
     })
   
   
@@ -96,7 +96,7 @@ getBookrequest=()=>{
   .get()
   .then((snapshot)=>{
     snapshot.forEach((doc)=>{
-if(doc.data().book_status  !== "recieved")
+if(doc.data().book_status  !== "received")
 {
   this.setState ({
 requestId:doc.data().requestId,
@@ -118,16 +118,16 @@ sendNotification=()=>{
       var lastname = doc.data().last_name
 
 
-      db.collection('all_notifications').where('request_id','==',this.state. requestId).get()
+      db.collection('all_notifications').where('request_id','==',this.state.requestId).get()
       .then((snapshot)=>{
         snapshot.forEach((doc) => {
-          var  donorId = doc.data().donor.id
+          var  donorId = doc.data().donor_id
           var bookname = doc.data().book_name
 
           db.collection('all_notifications').add({
             "targetedUserID":donorId,
             
-            "message": name + " " + lastname + "recived the book" + bookname, 
+            "message": name + " " + lastname + "received the book" + bookname, 
             "notification_status" : "unread",
             "bookName":bookname
           })
@@ -138,6 +138,16 @@ sendNotification=()=>{
 })
 }
 
+receivedBooks=(bookName)=>{
+  var userId = this.state.userId;
+  var requestId = this.state.requestId;
+  db.collection('received_books').add({
+    "user_id":  userId,
+    "book_name": bookName,
+    "request_id": requestId,
+    "bookStatus":"received"
+  })
+}
 
 componentDidMount()
 {
